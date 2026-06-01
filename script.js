@@ -1,4 +1,10 @@
-const StatusInscricao = require('./StatusInscricao');
+// 1. Enumeração no topo (para que o Participante possa enxergá-la)
+const StatusInscricao = Object.freeze({
+    CONFIRMADO: 'CONFIRMADO',
+    EM_ESPERA: 'EM_ESPERA',
+    CANCELADO: 'CANCELADO'
+});
+
 
 class Participante {
     constructor(identificador, nome) {
@@ -11,13 +17,10 @@ class Participante {
         this.status = novoStatus;
     }
 
-    // Get
     getIdentificador() { return this.identificador; }
     getNome() { return this.nome; }
     getStatus() { return this.status; }
 }
-
-module.exports = Participante;
 
 
 class Usuario {
@@ -25,35 +28,34 @@ class Usuario {
         this.identificador = identificador;
         this.nome = nome;
         this.ativo = true; 
-        // Todo usuário nasce ativo por padrão
     }
 
-    // Comportamento da entidade 
     desativarPerfil() {
         if (!this.ativo) {
             console.log(`Atenção: O usuário ${this.nome} já está inativo.`);
             return;
         }
         this.ativo = false;
+        console.log(`Perfil de ${this.nome} desativado com sucesso.`);
     }
 
     ativarPerfil() {
         this.ativo = true;
     }
 
-    // Get para acessar as propriedades
     getIdentificador() { return this.identificador; }
     getNome() { return this.nome; }
     isAtivo() { return this.ativo; }
 }
 
-module.exports = Usuario;
 
-// Enumeração para controlar os status da inscrição
-const StatusInscricao = Object.freeze({
-    CONFIRMADO: 'CONFIRMADO',
-    EM_ESPERA: 'EM_ESPERA',
-    CANCELADO: 'CANCELADO'
-});
 
-module.exports = StatusInscricao;
+const usuario1 = new Usuario(1, "Davi");
+console.log(`Usuário: ${usuario1.getNome()} | Ativo: ${usuario1.isAtivo()}`);
+usuario1.desativarPerfil();
+usuario1.desativarPerfil(); // Testando a mensagem de aviso
+
+const participante1 = new Participante(101, "Pablo");
+console.log(`Participante: ${participante1.getNome()} | Status: ${participante1.getStatus()}`);
+participante1.alterarStatus(StatusInscricao.CANCELADO);
+console.log(`Novo Status do Participante: ${participante1.getStatus()}`);
