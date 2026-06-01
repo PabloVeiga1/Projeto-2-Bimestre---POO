@@ -1,16 +1,15 @@
-// 1. Enumeração no topo (para que o Participante possa enxergá-la)
+//DAVI
 const StatusInscricao = Object.freeze({
     CONFIRMADO: 'CONFIRMADO',
     EM_ESPERA: 'EM_ESPERA',
     CANCELADO: 'CANCELADO'
 });
 
-
 class Participante {
     constructor(identificador, nome) {
         this.identificador = identificador;
         this.nome = nome;
-        this.status = StatusInscricao.CONFIRMADO; 
+        this.status = StatusInscricao.CONFIRMADO;
     }
 
     alterarStatus(novoStatus) {
@@ -18,16 +17,15 @@ class Participante {
     }
 
     getIdentificador() { return this.identificador; }
-    getNome() { return this.nome; }
-    getStatus() { return this.status; }
+    getNome()          { return this.nome; }
+    getStatus()        { return this.status; }
 }
-
 
 class Usuario {
     constructor(identificador, nome) {
         this.identificador = identificador;
         this.nome = nome;
-        this.ativo = true; 
+        this.ativo = true;
     }
 
     desativarPerfil() {
@@ -44,25 +42,15 @@ class Usuario {
     }
 
     getIdentificador() { return this.identificador; }
-    getNome() { return this.nome; }
-    isAtivo() { return this.ativo; }
+    getNome()          { return this.nome; }
+    isAtivo()          { return this.ativo; }
 }
 
-
-
-const usuario1 = new Usuario(1, "Davi");
-console.log(`Usuário: ${usuario1.getNome()} | Ativo: ${usuario1.isAtivo()}`);
-usuario1.desativarPerfil();
-usuario1.desativarPerfil(); // Testando a mensagem de aviso
-
-const participante1 = new Participante(101, "Pablo");
-console.log(`Participante: ${participante1.getNome()} | Status: ${participante1.getStatus()}`);
-participante1.alterarStatus(StatusInscricao.CANCELADO);
-console.log(`Novo Status do Participante: ${participante1.getStatus()}`);
+// JOAO
 class Evento {
     #participantesConfirmados = [];
     #listaDeEspera = [];
- 
+
     constructor(identificador, nome, local, data, limiteParticipantes) {
         this.identificador = identificador;
         this.nome = nome;
@@ -70,15 +58,15 @@ class Evento {
         this.data = data;
         this.limiteParticipantes = limiteParticipantes;
     }
- 
+
     #temVagaDisponivel() {
         return this.#participantesConfirmados.length < this.limiteParticipantes;
     }
- 
+
     getVagasRestantes() {
         return this.limiteParticipantes - this.#participantesConfirmados.length;
     }
- 
+
     inscreverParticipante(participante) {
         const jaInscrito = this.#participantesConfirmados.some(
             p => p.getIdentificador() === participante.getIdentificador()
@@ -86,12 +74,12 @@ class Evento {
         const naEspera = this.#listaDeEspera.some(
             p => p.getIdentificador() === participante.getIdentificador()
         );
- 
+
         if (jaInscrito || naEspera) {
             console.log(`"${participante.getNome()}" já está inscrito neste evento.`);
             return false;
         }
- 
+
         if (this.#temVagaDisponivel()) {
             participante.alterarStatus(StatusInscricao.CONFIRMADO);
             this.#participantesConfirmados.push(participante);
@@ -105,7 +93,7 @@ class Evento {
             return false;
         }
     }
- 
+
     #promoverProximoDaEspera() {
         if (this.#listaDeEspera.length === 0) return;
         const proximo = this.#listaDeEspera.shift();
@@ -113,7 +101,7 @@ class Evento {
         this.#participantesConfirmados.push(proximo);
         console.log(`"${proximo.getNome()}" foi promovido da lista de espera e está CONFIRMADO em "${this.nome}".`);
     }
- 
+
     cancelarInscricao(participante) {
         const indice = this.#participantesConfirmados.findIndex(
             p => p.getIdentificador() === participante.getIdentificador()
@@ -128,7 +116,7 @@ class Evento {
         if (this.#temVagaDisponivel()) this.#promoverProximoDaEspera();
         return true;
     }
- 
+
     getParticipantesConfirmados() { return [...this.#participantesConfirmados]; }
     getListaDeEspera()            { return [...this.#listaDeEspera]; }
     getIdentificador()            { return this.identificador; }
@@ -137,7 +125,7 @@ class Evento {
     getData()                     { return this.data; }
     getLimite()                   { return this.limiteParticipantes; }
 }
- 
+
 class ConsultaEventos {
     consultarParticipantes(evento) {
         const confirmados = evento.getParticipantesConfirmados();
@@ -149,7 +137,7 @@ class ConsultaEventos {
         console.log(`  Total: ${confirmados.length} / ${evento.getLimite()} vagas`);
         return confirmados;
     }
- 
+
     consultarListaDeEspera(evento) {
         const espera = evento.getListaDeEspera();
         console.log(`\n── Lista de espera: "${evento.getNome()}" ──`);
@@ -159,7 +147,7 @@ class ConsultaEventos {
         });
         return espera;
     }
- 
+
     resumoEvento(evento) {
         console.log(`\n══ Resumo: "${evento.getNome()}" ══`);
         console.log(`  Local : ${evento.getLocal()}`);
@@ -168,4 +156,133 @@ class ConsultaEventos {
         console.log(`  Espera: ${evento.getListaDeEspera().length} pessoa(s) aguardando`);
     }
 }
- 
+
+// PABLO
+class RegistroOperacoes {
+    #operacoes = [];
+
+    registrar(tipo, descricao) {
+        const op = {
+            id: this.#operacoes.length + 1,
+            tipo,
+            descricao,
+            timestamp: new Date().toISOString()
+        };
+        this.#operacoes.push(op);
+        console.log(`[LOG #${op.id}] ${op.tipo} — ${op.descricao}`);
+        return op;
+    }
+
+    getOperacoes() { return [...this.#operacoes]; }
+
+    exportar() {
+        console.log('\n══ Registro de Operações ══');
+        if (this.#operacoes.length === 0) {
+            console.log('  Nenhuma operação registrada.');
+            return;
+        }
+        this.#operacoes.forEach(op => {
+            console.log(`  [${op.id}] ${op.timestamp} | ${op.tipo.padEnd(25)} | ${op.descricao}`);
+        });
+    }
+}
+
+class ControladorInscricoes {
+    #registro;
+
+    constructor(registroOperacoes) {
+        this.#registro = registroOperacoes;
+    }
+
+    inscrever(participante, evento) {
+        const resultado = evento.inscreverParticipante(participante);
+        const tipo = resultado ? 'INSCRICAO_CONFIRMADA' : 'INSCRICAO_ESPERA_OU_NEGADA';
+        this.#registro.registrar(tipo, `"${participante.getNome()}" → evento "${evento.getNome()}"`);
+        return resultado;
+    }
+
+    cancelarInscricao(participante, evento) {
+        const resultado = evento.cancelarInscricao(participante);
+        const tipo = resultado ? 'CANCELAMENTO_OK' : 'CANCELAMENTO_FALHOU';
+        this.#registro.registrar(tipo, `"${participante.getNome()}" → evento "${evento.getNome()}"`);
+        return resultado;
+    }
+}
+
+class ControladorPrincipal {
+    #registro;
+    #ctrlInscricoes;
+    #eventos = [];
+    #participantes = [];
+
+    constructor() {
+        this.#registro = new RegistroOperacoes();
+        this.#ctrlInscricoes = new ControladorInscricoes(this.#registro);
+    }
+
+    cadastrarEvento(identificador, nome, local, data, limite) {
+        const ev = new Evento(identificador, nome, local, data, limite);
+        this.#eventos.push(ev);
+        this.#registro.registrar('EVENTO_CRIADO', `"${nome}" em ${local} — limite: ${limite} vagas`);
+        return ev;
+    }
+
+    registrarParticipante(identificador, nome) {
+        const existente = this.#participantes.find(p => p.getIdentificador() === identificador);
+        if (existente) {
+            console.log(`Atenção: ID "${identificador}" já está em uso.`);
+            return null;
+        }
+        const p = new Participante(identificador, nome);
+        this.#participantes.push(p);
+        this.#registro.registrar('PARTICIPANTE_REGISTRADO', `"${nome}" (ID: ${identificador})`);
+        return p;
+    }
+
+    inscrever(identificadorParticipante, identificadorEvento) {
+        const p = this.#buscarParticipante(identificadorParticipante);
+        const ev = this.#buscarEvento(identificadorEvento);
+        if (!p || !ev) return false;
+        return this.#ctrlInscricoes.inscrever(p, ev);
+    }
+
+    cancelarInscricao(identificadorParticipante, identificadorEvento) {
+        const p = this.#buscarParticipante(identificadorParticipante);
+        const ev = this.#buscarEvento(identificadorEvento);
+        if (!p || !ev) return false;
+        return this.#ctrlInscricoes.cancelarInscricao(p, ev);
+    }
+
+    consultarParticipantes(identificadorEvento) {
+        const ev = this.#buscarEvento(identificadorEvento);
+        if (!ev) return;
+        const consulta = new ConsultaEventos();
+        this.#registro.registrar('CONSULTA_PARTICIPANTES', `Evento "${ev.getNome()}"`);
+        consulta.consultarParticipantes(ev);
+    }
+
+    relatorioGeral() {
+        const consulta = new ConsultaEventos();
+        this.#registro.registrar('RELATORIO_GERAL', `${this.#eventos.length} evento(s) consultado(s)`);
+        this.#eventos.forEach(ev => consulta.resumoEvento(ev));
+    }
+
+    exportarLog() {
+        this.#registro.exportar();
+    }
+
+    #buscarParticipante(identificador) {
+        const p = this.#participantes.find(x => x.getIdentificador() === identificador);
+        if (!p) console.log(`Participante com ID "${identificador}" não encontrado.`);
+        return p || null;
+    }
+
+    #buscarEvento(identificador) {
+        const ev = this.#eventos.find(x => x.getIdentificador() === identificador);
+        if (!ev) console.log(`Evento com ID "${identificador}" não encontrado.`);
+        return ev || null;
+    }
+
+    getEventos()       { return [...this.#eventos]; }
+    getParticipantes() { return [...this.#participantes]; }
+}
