@@ -77,20 +77,20 @@ class Evento {
 
         if (jaInscrito || naEspera) {
             console.log(`"${participante.getNome()}" já está inscrito neste evento.`);
-            return false;
+            return 'DUPLICADO';
         }
 
         if (this.#temVagaDisponivel()) {
             participante.alterarStatus(StatusInscricao.CONFIRMADO);
             this.#participantesConfirmados.push(participante);
             console.log(`"${participante.getNome()}" inscrito com sucesso em "${this.nome}".`);
-            return true;
+            return 'CONFIRMADO';
         } else {
             participante.alterarStatus(StatusInscricao.EM_ESPERA);
             this.#listaDeEspera.push(participante);
             const posicao = this.#listaDeEspera.length;
             console.log(`Vagas esgotadas. "${participante.getNome()}" entrou na lista de espera (posição ${posicao}).`);
-            return false;
+            return 'EM_ESPERA';
         }
     }
 
@@ -156,8 +156,7 @@ class ConsultaEventos {
         console.log(`  Espera: ${evento.getListaDeEspera().length} pessoa(s) aguardando`);
     }
 }
-
-// PABLO
+// PABLO 
 class RegistroOperacoes {
     #operacoes = [];
 
@@ -196,9 +195,13 @@ class ControladorInscricoes {
 
     inscrever(participante, evento) {
         const resultado = evento.inscreverParticipante(participante);
-        const tipo = resultado ? 'INSCRICAO_CONFIRMADA' : 'INSCRICAO_ESPERA_OU_NEGADA';
-        this.#registro.registrar(tipo, `"${participante.getNome()}" → evento "${evento.getNome()}"`);
-        return resultado;
+        const tipos = {
+            CONFIRMADO: 'INSCRICAO_CONFIRMADA',
+            EM_ESPERA:  'INSCRICAO_EM_ESPERA',
+            DUPLICADO:  'INSCRICAO_DUPLICADA'
+        };
+        this.#registro.registrar(tipos[resultado], `"${participante.getNome()}" → evento "${evento.getNome()}"`);
+        return resultado === 'CONFIRMADO';
     }
 
     cancelarInscricao(participante, evento) {
